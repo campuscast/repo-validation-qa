@@ -6,8 +6,15 @@ export class SlotRulesService {
     const issues: { severity: 'error' | 'warning' | 'info'; code: string; message: string; slot_id?: string }[] = [];
 
     for (const slot of slots) {
-      if (!slot.asset_id) {
-        issues.push({ severity: 'error', code: 'MISSING_ASSET', message: `Slot ${slot.slot_id} has no asset assigned`, slot_id: slot.slot_id });
+      const hasAsset = Boolean(slot.asset_id);
+      const hasPublication = Boolean(slot.publication_id);
+      if (!hasAsset && !hasPublication) {
+        issues.push({
+          severity: 'error',
+          code: 'MISSING_CONTENT',
+          message: `Slot ${slot.slot_id} has neither asset nor publication assigned`,
+          slot_id: slot.slot_id,
+        });
       }
       if (!slot.start_time || !slot.end_time) {
         issues.push({ severity: 'error', code: 'MISSING_TIME', message: `Slot ${slot.slot_id} missing start/end time`, slot_id: slot.slot_id });
